@@ -1,8 +1,12 @@
 # RegBridge
 
+**Public Portfolio Edition**
+
 RegBridge is an engineering reference implementation for deterministic regulatory evidence workflows.
 
 It explores how structured regulatory workflows can be modelled as secure, auditable and repeatable software processes while keeping domain-specific regulatory logic isolated from the reusable workflow engine.
+
+This repository contains the public portfolio edition of RegBridge. It uses synthetic data and a fictional Example Compliance Pack. Private domain-specific content, production data and development history are intentionally excluded. RegBridge is an independent engineering reference implementation with no regulator affiliation or endorsement.
 
 > This portfolio edition is not production software, legal advice, a compliance certification, or a regulatory submission service. Its bundled RegPack and data are deliberately synthetic.
 
@@ -130,4 +134,3 @@ Portfolio/reference edition. The reusable architecture is implemented and tested
 Copyright © Lawrence Chew. All rights reserved.
 
 Source code is published for portfolio and evaluation purposes. No licence is granted for redistribution, modification or commercial use unless explicitly stated otherwise. Third-party dependencies remain subject to their own licences; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
-
