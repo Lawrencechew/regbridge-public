@@ -57,12 +57,12 @@ jobs:
       - uses: actions/checkout@v4
       - run: docker build -t regbridge-backend:ci backend
       - run: docker build -f frontend/Dockerfile.production -t regbridge-frontend:ci frontend
-      - uses: aquasecurity/trivy-action@0.33.1
+      - uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
           image-ref: regbridge-backend:ci
           severity: HIGH,CRITICAL
           exit-code: "1"
-      - uses: aquasecurity/trivy-action@0.33.1
+      - uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
         with:
           image-ref: regbridge-frontend:ci
           severity: HIGH,CRITICAL
