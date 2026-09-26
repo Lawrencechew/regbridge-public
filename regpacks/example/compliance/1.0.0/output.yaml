@@ -1,0 +1,30 @@
+id: example-compliance-xlsx
+version: 1.0.0
+type: xlsx_template
+template:
+  source_id: EXAMPLE-TEMPLATE-001
+  filename: example-evidence-report.xlsx
+  sha256: e81c0635d515df342dfab43af5cbfef7eb85a2537e15d2d4eaf39aace8bb9c3a
+  local_path: templates/example-evidence-report.xlsx
+filename:
+  pattern: example-evidence-{dataset_id}.xlsx
+mappings:
+  - type: scalar_cell
+    source: {type: dataset_field, field_id: organisation_name, aggregation: unique}
+    target: {sheet: Summary, cell: B3}
+  - type: scalar_cell
+    source: {type: dataset_field, field_id: reporting_period, aggregation: unique}
+    target: {sheet: Summary, cell: B4}
+  - type: record_table
+    sheet: Evidence
+    start_row: 2
+    end_row: 1001
+    columns:
+      - {field_id: item_code, column: A}
+      - {field_id: item_description, column: B}
+      - {field_id: unit, column: C}
+      - {field_id: opening_quantity, column: D}
+      - {field_id: received_quantity, column: E}
+      - {field_id: used_quantity, column: F}
+      - {field_id: closing_quantity, column: G}
+      - {field_id: notes, column: H}

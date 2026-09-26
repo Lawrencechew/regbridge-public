@@ -1,0 +1,67 @@
+id: EXAMPLE-COMPLIANCE-VALIDATION
+version: 1.0.0
+name: Synthetic evidence validation rules
+description: Deterministic checks for the fictional example dataset.
+rules:
+  - id: EXAMPLE-VAL-001
+    name: Organisation is present
+    description: Each synthetic row identifies its fictional organisation.
+    type: not_blank
+    severity: blocking
+    field_id: organisation_name
+    source_refs: [EXAMPLE-SPEC-001]
+  - id: EXAMPLE-VAL-002
+    name: Item code is present
+    description: Each row requires a stable item code.
+    type: not_blank
+    severity: blocking
+    field_id: item_code
+    source_refs: [EXAMPLE-SPEC-001]
+  - id: EXAMPLE-VAL-003
+    name: Unit is recognised
+    description: The demo accepts only fictional count or kilogram quantities.
+    type: enum
+    severity: blocking
+    field_id: unit
+    allowed_values: [count, kg]
+    source_refs: [EXAMPLE-SPEC-001]
+  - id: EXAMPLE-VAL-004
+    name: Opening quantity is non-negative
+    description: Quantities cannot be negative in the synthetic demo.
+    type: minimum
+    severity: blocking
+    field_id: opening_quantity
+    minimum: "0"
+    source_refs: [EXAMPLE-SPEC-001]
+  - id: EXAMPLE-VAL-005
+    name: Received quantity is non-negative
+    description: Quantities cannot be negative in the synthetic demo.
+    type: minimum
+    severity: blocking
+    field_id: received_quantity
+    minimum: "0"
+    source_refs: [EXAMPLE-SPEC-001]
+  - id: EXAMPLE-VAL-006
+    name: Used quantity is non-negative
+    description: Quantities cannot be negative in the synthetic demo.
+    type: minimum
+    severity: blocking
+    field_id: used_quantity
+    minimum: "0"
+    source_refs: [EXAMPLE-SPEC-001]
+  - id: EXAMPLE-VAL-007
+    name: Closing quantity is non-negative
+    description: Quantities cannot be negative in the synthetic demo.
+    type: minimum
+    severity: blocking
+    field_id: closing_quantity
+    minimum: "0"
+    source_refs: [EXAMPLE-SPEC-001]
+  - id: EXAMPLE-VAL-008
+    name: Closing precision is bounded
+    description: The synthetic report permits at most two decimal places.
+    type: decimal_places
+    severity: blocking
+    field_id: closing_quantity
+    maximum_places: 2
+    source_refs: [EXAMPLE-SPEC-001]

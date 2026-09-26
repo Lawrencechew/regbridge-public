@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-regbridge}
+      POSTGRES_USER: ${POSTGRES_USER:-regbridge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-regbridge-local-only}
+    volumes:
+      - regbridge_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      APP_NAME: ${APP_NAME:-regbridge-api}
+      APP_ENV: ${APP_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_DEBUG: "false"
+      APPLICATION_SECRET: ${APPLICATION_SECRET:-development-only-change-me}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5180}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost,127.0.0.1,backend,testserver}
+      HTTPS_BOUNDARY: ${HTTPS_BOUNDARY:-false}
+      TRUST_PROXY_HEADERS: "false"
+      REGPACKS_PATH: /regpacks
+      IMPORT_MAX_FILE_SIZE_MB: ${IMPORT_MAX_FILE_SIZE_MB:-10}
+      IMPORT_MAX_ROWS: ${IMPORT_MAX_ROWS:-50000}
+      IMPORT_MAX_COLUMNS: ${IMPORT_MAX_COLUMNS:-200}
+      IMPORT_MAX_XLSX_SHEETS: ${IMPORT_MAX_XLSX_SHEETS:-20}
+      IMPORT_MAX_XLSX_ZIP_ENTRIES: ${IMPORT_MAX_XLSX_ZIP_ENTRIES:-10000}
+      IMPORT_MAX_XLSX_UNCOMPRESSED_MB: ${IMPORT_MAX_XLSX_UNCOMPRESSED_MB:-100}
+      IMPORT_MAX_XLSX_COMPRESSION_RATIO: ${IMPORT_MAX_XLSX_COMPRESSION_RATIO:-100}
+      IMPORT_PREVIEW_ROWS: ${IMPORT_PREVIEW_ROWS:-20}
+      OUTPUT_MAX_FILE_SIZE_MB: ${OUTPUT_MAX_FILE_SIZE_MB:-20}
+      PREFLIGHT_MAX_FINDINGS: ${PREFLIGHT_MAX_FINDINGS:-500}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://regbridge:regbridge-local-only@postgres:5432/regbridge}
+      DATABASE_SQL_ECHO: ${DATABASE_SQL_ECHO:-false}
+      PERSISTENCE_ENABLED: "true"
+      AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      OIDC_ISSUER: ${OIDC_ISSUER:-}
+      OIDC_DISCOVERY_URL: ${OIDC_DISCOVERY_URL:-}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:-}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:-}
+      OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI:-http://localhost:8000/auth/callback}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5180}
+      SESSION_EXPIRY_SECONDS: ${SESSION_EXPIRY_SECONDS:-28800}
+      OIDC_TRANSACTION_EXPIRY_SECONDS: ${OIDC_TRANSACTION_EXPIRY_SECONDS:-600}
+      INVITATION_EXPIRY_HOURS: ${INVITATION_EXPIRY_HOURS:-168}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      COOKIE_SAMESITE: ${COOKIE_SAMESITE:-lax}
+      CSRF_HEADER_NAME: ${CSRF_HEADER_NAME:-X-CSRF-Token}
+    volumes:
+      - ./regpacks:/regpacks:ro
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-}
+      VITE_DEV_PROXY_TARGET: http://backend:8000
+    ports:
+      - "5180:5180"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  regbridge_postgres_data:

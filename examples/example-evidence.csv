@@ -1,0 +1,3 @@
+organisation_name,reporting_period,item_code,item_description,unit,opening_quantity,received_quantity,used_quantity,closing_quantity,notes
+Northstar Compliance Labs,2026-08,EX-001,Synthetic filter cartridge,count,12,5,3,14,Fictional demonstration record
+Northstar Compliance Labs,2026-08,EX-002,Synthetic absorbent material,kg,25.50,10.00,8.25,27.25,Fictional demonstration record

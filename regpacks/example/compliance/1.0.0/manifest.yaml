@@ -1,0 +1,38 @@
+schema_version: "1.1"
+id: example-compliance
+name: Example Compliance Pack
+regulator:
+  code: EXAMPLE
+  name: Fictional Standards Office
+version: 1.0.0
+effective:
+  from: 2026-01-01
+  to: null
+description: Deliberately synthetic evidence workflow for demonstrating the RegPack interface.
+status: draft
+reporting:
+  frequency: monthly
+  submission_deadline:
+    type: day_of_following_period
+    day: 15
+components:
+  canonical_schema: canonical-schema.yaml
+  validation_rules: validation-rules.yaml
+  reconciliation_rules: reconciliation-rules.yaml
+  output: output.yaml
+sources:
+  - id: EXAMPLE-SPEC-001
+    title: Fictional Evidence Record Specification
+    publisher: Fictional Standards Office
+    url: https://example.com/fictional-evidence-specification
+    reference: Synthetic portfolio specification; no regulatory authority
+    published_date: 2026-01-01
+    checked_at: 2026-09-01
+  - id: EXAMPLE-TEMPLATE-001
+    title: Synthetic Evidence Report Template
+    publisher: Northstar Compliance Labs
+    url: https://example.com/synthetic-evidence-template
+    reference: Generated specifically for the public portfolio edition
+    published_date: 2026-01-01
+    checked_at: 2026-09-01
+    content_hash: sha256:e81c0635d515df342dfab43af5cbfef7eb85a2537e15d2d4eaf39aace8bb9c3a

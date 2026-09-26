@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    cpus: "${POSTGRES_CPU_LIMIT:-1.0}"
+    mem_limit: "${POSTGRES_MEMORY_LIMIT:-512m}"
+    mem_reservation: "${POSTGRES_MEMORY_RESERVATION:-128m}"
+    pids_limit: 200
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-regbridge}
+      POSTGRES_USER: ${POSTGRES_USER:-regbridge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - regbridge_production_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    cpus: "${BACKEND_CPU_LIMIT:-2.0}"
+    mem_limit: "${BACKEND_MEMORY_LIMIT:-512m}"
+    mem_reservation: "${BACKEND_MEMORY_RESERVATION:-256m}"
+    pids_limit: 256
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APPLICATION_SECRET: ${APPLICATION_SECRET:?APPLICATION_SECRET is required}
+      AUTH_ENABLED: "true"
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:?CORS_ALLOWED_ORIGINS is required}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:?TRUSTED_HOSTS is required}
+      HTTPS_BOUNDARY: "true"
+      COOKIE_SECURE: "true"
+      TRUST_PROXY_HEADERS: "true"
+      TRUSTED_PROXY_IPS: ${TRUSTED_PROXY_IPS:-172.16.0.0/12}
+      OIDC_ISSUER: ${OIDC_ISSUER:?OIDC_ISSUER is required}
+      OIDC_DISCOVERY_URL: ${OIDC_DISCOVERY_URL:?OIDC_DISCOVERY_URL is required}
+      OIDC_CLIENT_ID: ${OIDC_CLIENT_ID:?OIDC_CLIENT_ID is required}
+      OIDC_CLIENT_SECRET: ${OIDC_CLIENT_SECRET:?OIDC_CLIENT_SECRET is required}
+      OIDC_REDIRECT_URI: ${OIDC_REDIRECT_URI:?OIDC_REDIRECT_URI is required}
+      FRONTEND_URL: ${FRONTEND_URL:?FRONTEND_URL is required}
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required and must contain a URL-encoded PostgreSQL password}
+      DATABASE_SQL_ECHO: "false"
+      PERSISTENCE_ENABLED: "true"
+      REGPACKS_PATH: /regpacks
+      GENERATION_MAX_CONCURRENCY: "2"
+      GENERATION_RETRY_AFTER_SECONDS: ${GENERATION_RETRY_AFTER_SECONDS:-5}
+    volumes:
+      - ./regpacks:/regpacks:ro
+    expose:
+      - "8000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+    cpus: "${FRONTEND_CPU_LIMIT:-0.5}"
+    mem_limit: "${FRONTEND_MEMORY_LIMIT:-128m}"
+    mem_reservation: "${FRONTEND_MEMORY_RESERVATION:-64m}"
+    pids_limit: 128
+    ports:
+      - "127.0.0.1:${PRODUCTION_FRONTEND_PORT:-8088}:8080"
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      - /var/cache/nginx:size=16m
+      - /var/run:size=1m
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  regbridge_production_postgres:

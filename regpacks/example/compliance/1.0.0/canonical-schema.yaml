@@ -1,0 +1,16 @@
+id: example-evidence-record
+version: 1.0.0
+name: Synthetic Evidence Record
+description: Fictional monthly quantity records used only by the portfolio demo.
+fields:
+  - {id: organisation_name, name: Organisation name, data_type: string, required: true}
+  - {id: reporting_period, name: Reporting period, data_type: string, required: true}
+  - {id: item_code, name: Item code, data_type: string, required: true}
+  - {id: item_description, name: Item description, data_type: string, required: true}
+  - {id: unit, name: Unit, data_type: string, required: true}
+  - {id: opening_quantity, name: Opening quantity, data_type: decimal, required: true}
+  - {id: received_quantity, name: Received quantity, data_type: decimal, required: true}
+  - {id: used_quantity, name: Used quantity, data_type: decimal, required: true}
+  - {id: closing_quantity, name: Closing quantity, data_type: decimal, required: true}
+  - {id: notes, name: Notes, data_type: string}
+

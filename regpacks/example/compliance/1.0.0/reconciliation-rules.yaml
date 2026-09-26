@@ -1,0 +1,18 @@
+id: EXAMPLE-COMPLIANCE-RECONCILIATION
+version: 1.0.0
+name: Synthetic quantity reconciliation
+description: Opening plus received less used must equal closing.
+rules:
+  - id: EXAMPLE-REC-001
+    name: Quantity balance
+    description: Opening quantity plus receipts minus usage equals closing quantity.
+    type: row_equation
+    severity: blocking
+    tolerance: 0.0
+    source_refs: [EXAMPLE-SPEC-001]
+    left:
+      - {field_id: opening_quantity, operator: add}
+      - {field_id: received_quantity, operator: add}
+      - {field_id: used_quantity, operator: subtract}
+    right: {field_id: closing_quantity}
+
